@@ -58,12 +58,12 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/zgm-core/request.git"
+        "url": "https://github.com/zgm-core/REQUEST.git"
     },
     "bugs": {
-        "url": "https://github.com/zgm-core/request/issues"
+        "url": "https://github.com/zgm-core/REQUEST/issues"
     },
-    "homepage": "https://github.com/zgm-core/request#readme",
+    "homepage": "https://github.com/zgm-core/REQUEST#readme",
     "engines": {
         "node": ">=18.0.0"
     },
