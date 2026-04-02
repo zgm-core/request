@@ -177,8 +177,7 @@ describe('IdempotentHandler - 幂等性控制', () => {
     it('应该处理 pending 超时', async () => {
       const shortTTLHandler = new IdempotentHandler({
         enabled: true,
-        ttl: 100,
-        pendingTimeout: 50
+        ttl: 50
       });
 
       const key = 'timeout-key';
@@ -187,7 +186,7 @@ describe('IdempotentHandler - 幂等性控制', () => {
       // pending 状态应该存在
       expect(shortTTLHandler.isPending(key)).toBe(true);
 
-      // 等待超时
+      // 等待超时 (超过 ttl)
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // pending 应该已过期
