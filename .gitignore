@@ -8,10 +8,6 @@ coverage/
 .env.test.local
 .env.production.local
 .DS_Store
-_test_/
-*.spec.ts
-*.test.ts
-test.mjs
 *.7z
 *.zip
 *.rar
