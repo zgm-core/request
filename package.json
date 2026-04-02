@@ -1,0 +1,92 @@
+{
+    "name": "@zgm-core/request",
+    "version": "1.0.0",
+    "description": "Enterprise-grade HTTP request library built on Axios with TypeScript support - 支持并发、串行、幂等、缓存及自动化代码生成",
+    "type": "module",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts",
+    "sideEffects": false,
+    "bin": {
+        "request-gen": "./cli/dist/cli.js"
+    },
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.esm.js",
+            "require": "./dist/index.cjs.js"
+        }
+    },
+    "files": [
+        "dist",
+        "cli",
+        "README.md",
+        "LICENSE",
+        "CHANGELOG.md",
+        "docs"
+    ],
+    "scripts": {
+        "build": "vite build && cd cli && npm run build",
+        "prepublishOnly": "npm run build",
+        "dev": "vite build --watch",
+        "cli": "node cli/dist/cli.js",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "lint": "tsc --noEmit",
+        "release": "standard-version",
+        "release:patch": "npm version patch && git push origin main --tags",
+        "release:minor": "npm version minor && git push origin main --tags",
+        "release:major": "npm version major && git push origin main --tags"
+    },
+    "keywords": [
+        "http-client",
+        "request",
+        "axios",
+        "fetch",
+        "http",
+        "retry",
+        "cache",
+        "websocket",
+        "concurrent",
+        "serial",
+        "idempotent",
+        "swagger",
+        "code-generator"
+    ],
+    "author": "zgm-core <2273204759@qq.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/zgm-core/request.git"
+    },
+    "bugs": {
+        "url": "https://github.com/zgm-core/request/issues"
+    },
+    "homepage": "https://github.com/zgm-core/request#readme",
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "dependencies": {
+        "@types/js-yaml": "^4.0.9",
+        "axios-retry": "^4.5.0",
+        "chalk": "^5.6.2",
+        "commander": "^14.0.3",
+        "crypto-js": "^4.2.0",
+        "handlebars": "^4.7.8",
+        "js-yaml": "^4.1.1",
+        "ora": "^9.3.0",
+        "qs": "^6.15.0",
+        "zod": "^3.23.0"
+    },
+    "devDependencies": {
+        "@types/crypto-js": "^4.2.2",
+        "@types/node": "^20.0.0",
+        "@types/qs": "^6.9.18",
+        "@vitest/coverage-v8": "^2.1.8",
+        "typescript": "^5.7.2",
+        "vite": "^6.0.3",
+        "vite-plugin-dts": "^4.3.0",
+        "vitest": "^2.1.8"
+    }
+}
