@@ -1,18 +1,39 @@
+# Source files
 src/
-_test_/
-*.test.ts
-*.spec.ts
-dist/
+test/
+*.ts
+!*.d.ts
+
+# Map files
+*.map
+**/*.map
+
+# Config files
 tsconfig.json
 vite.config.ts
-.prettierrc*
-.eslintrc*
+vitest.config.ts
+
+# Development files
+.git/
+.github/
 .gitignore
-.npmignore
+.eslintrc*
+.prettierrc*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
 *.log
+npm-debug.log*
+
+# Test
 coverage/
-.turbo/
-*.7z
-*.zip
-*.rar
-test.mjs
+.nyc_output/
+
+# Misc
+.DS_Store
+Thumbs.db
