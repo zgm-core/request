@@ -239,10 +239,6 @@ export class BaseRequest extends RequestMethods {
         // 请求拦截器 - 集成插件 beforeRequest  config:里面有请求参数并且请求参数只是他的一部分
         this.instance.interceptors.request.use(
             async (config: InterceptorRequestConfig) => {
-                if (config.proxy && config.baseURL) {
-                    config.proxyURL = config.baseURL;
-                    config.baseURL = '';
-                }
                 // 执行插件 beforeRequest 钩子
                 const pluginContext = this.createPluginContext(config);
                 await this.pluginManager.executeBeforeRequest(pluginContext);

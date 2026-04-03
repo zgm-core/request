@@ -2,18 +2,18 @@ import { z } from 'zod';
 
 // ==================== 基础枚举类型 ====================
 
-/** 环境类型定义 */
 const EnvironmentSchema = z.enum(['development', 'production', 'test', 'preview', 'release', 'staging']);
 const CancelTargetSchema = z.enum(['current', 'previous']);
 
-// ==================== 重试配置 Schema ====================
+// ==================== 子配置 Schema ====================
 
-/** 重试功能配置 Schema - 只包含需要的字段 */
-const RetryConfigSchema = z.object({
-    enabled: z.boolean().default(true),
-    retries: z.number().int().min(0).default(3),
-    shouldResetTimeout: z.boolean().default(true)
-});
+const RetryConfigSchema = z
+    .object({
+        enabled: z.boolean().default(true),
+        retries: z.number().int().min(0).default(3),
+        shouldResetTimeout: z.boolean().default(true)
+    })
+    .optional();
 
 const RequestCancelConfigSchema = z
     .object({
@@ -22,69 +22,82 @@ const RequestCancelConfigSchema = z
     })
     .optional();
 
-/** 缓存配置 Schema */
-const CacheConfigSchema = z.object({
-    enabled: z.boolean().default(false),
-    defaultTTL: z.number().default(5 * 60 * 1000),
-    maxSize: z.number().default(5 * 1024 * 1024),
-    storageType: z.enum(['memory', 'localStorage', 'sessionStorage']).default('memory'),
-    https: z.boolean().optional()
-}).optional();
+const CacheConfigSchema = z
+    .object({
+        enabled: z.boolean().default(false),
+        defaultTTL: z.number().default(5 * 60 * 1000),
+        maxSize: z.number().default(5 * 1024 * 1024),
+        storageType: z.enum(['memory', 'localStorage', 'sessionStorage']).default('memory'),
+        https: z.boolean().optional()
+    })
+    .optional();
 
-/** 幂等性配置 Schema */
-const IdempotentConfigSchema = z.object({
-    enabled: z.boolean().default(false),
-    ttl: z.number().default(60000),
-    storage: z.enum(['memory', 'localStorage', 'sessionStorage']).default('memory')
-}).optional();
+const IdempotentConfigSchema = z
+    .object({
+        enabled: z.boolean().default(false),
+        ttl: z.number().default(60000),
+        storage: z.enum(['memory', 'localStorage', 'sessionStorage']).default('memory')
+    })
+    .optional();
 
-/** 日志级别 Schema */
 const LogLevelSchema = z.enum(['error', 'warn', 'info', 'debug']).optional();
+
+const InterceptorsSchema = z
+    .object({
+        request: z.function().optional(),
+        response: z.function().optional(),
+        error: z.function().optional()
+    })
+    .optional();
+
+const TransitionalSchema = z
+    .object({
+        silentJSONParsing: z.boolean().optional(),
+        forcedJSONParsing: z.boolean().optional(),
+        clarifyTimeoutError: z.boolean().optional()
+    })
+    .optional();
 
 // ==================== 核心配置 Schema ====================
 
-/** 核心配置 Schema - 验证 GlobalConfig 的所有字段 */
 export const GlobalConfigSchema = z.object({
+    // GlobalConfig 自身字段
     env: EnvironmentSchema.default('test'),
-    baseURL: z
-        .string()
-        .optional()
-        .refine(
-            val => {
-                // 如果是空字符串或undefined，跳过URL验证
-                if (!val || val.trim() === '') {
-                    return true;
-                }
-                // 有值时才验证URL格式
-                try {
-                    new URL(val);
-                    return true;
-                } catch {
-                    return false;
-                }
-            },
-            {
-                message: '必须是有效的URL格式'
-            }
-        )
-        .default(''),
-    proxy: z.boolean().optional().default(false),
-    timeout: z
-        .number()
-        .min(0)
-        .default(5000 * 60),
-    headers: z.record(z.unknown()).default({}),
-    defaultTransformData: z.boolean().default(true),
-    retryConfig: RetryConfigSchema.default({
-        enabled: true,
-        retries: 3,
-        shouldResetTimeout: true
-    }),
+    interceptors: InterceptorsSchema,
+    defaultTransformData: z.boolean().optional(),
     requestCancel: RequestCancelConfigSchema,
-    cache: CacheConfigSchema,
     idempotent: IdempotentConfigSchema,
+    enablePerformanceMonitor: z.boolean().optional(),
     logLevel: LogLevelSchema,
-    enablePerformanceMonitor: z.boolean().optional()
+
+    // BaseRequestConfig 字段
+    baseURL: z.string().optional().default(''),
+    timeout: z.number().min(0).optional().default(5000 * 60),
+    headers: z.record(z.unknown()).optional().default({}),
+    withCredentials: z.boolean().optional(),
+    adapter: z.unknown().optional(),
+    responseType: z.enum(['arraybuffer', 'blob', 'document', 'json', 'text', 'stream']).optional(),
+    responseEncoding: z.string().optional(),
+    validateStatus: z.function().optional(),
+    paramsSerializer: z.function().optional(),
+    maxRedirects: z.number().optional(),
+    maxContentLength: z.number().optional(),
+    maxBodyLength: z.number().optional(),
+    transitional: TransitionalSchema,
+    transformData: z.boolean().optional(),
+
+    // RequestOptions 字段
+    cache: CacheConfigSchema,
+    retryConfig: RetryConfigSchema,
+    cancel: z
+        .object({
+            enabled: z.boolean().optional(),
+            key: z.string().optional()
+        })
+        .optional(),
+    enableTiming: z.boolean().optional(),
+    skipAuth: z.boolean().optional(),
+    skipTransform: z.boolean().optional()
 });
 
 // ==================== 类型推断 ====================
@@ -108,9 +121,11 @@ export function validateCoreConfig(config: unknown): CoreConfig {
     const result = CoreConfigSchema.safeParse(config);
 
     if (!result.success) {
-        const errorDetails = result.error.issues
+        const issues = result.error.issues ?? [];
+        
+        const errorDetails = issues
             .map(issue => {
-                const path = issue.path.join('.') || '根级别';
+                const path = issue.path?.join('.') || '根级别';
                 let message = `字段 "${path}": ${issue.message}`;
 
                 if (issue.code === 'invalid_type') {
@@ -121,7 +136,7 @@ export function validateCoreConfig(config: unknown): CoreConfig {
             })
             .join('\n');
 
-        throw new Error(`用户配置错误:${errorDetails}`);
+        throw new Error(`用户配置错误:${errorDetails || JSON.stringify(issues)}`);
     }
 
     return result.data;
@@ -138,9 +153,11 @@ export function safeValidateCoreConfig(config: unknown): {
     const result = CoreConfigSchema.safeParse(config);
 
     if (!result.success) {
+        const issues = result.error.issues ?? [];
+        
         return {
             success: false,
-            errors: result.error.issues.map(issue => `${issue.path.join('.') || '根级别'}: ${issue.message}`)
+            errors: issues.map(issue => `${issue.path?.join('.') || '根级别'}: ${issue.message}`)
         };
     }
 
