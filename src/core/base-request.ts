@@ -235,7 +235,8 @@ export class BaseRequest extends RequestMethods {
      * @description 配置请求和响应拦截器，支持插件系统集成
      */
     private setupInterceptors(): void {
-        const { interceptors } = this.globalConfig;
+        // 注意：不要解构 interceptors，必须从 this.globalConfig 实时读取
+        // 否则 configure() 更新后闭包中的值不会变化
 
         // 请求拦截器 - 集成插件 beforeRequest  config:里面有请求参数并且请求参数只是他的一部分
         this.instance.interceptors.request.use(
@@ -271,6 +272,8 @@ export class BaseRequest extends RequestMethods {
                     };
                 }
 
+                // 实时从 globalConfig 读取 interceptors，支持动态配置
+                const interceptors = this.globalConfig.interceptors;
                 if (interceptors?.request) {
                     return interceptors.request(config);
                 }
@@ -278,10 +281,11 @@ export class BaseRequest extends RequestMethods {
                 return this.defaultRequestInterceptor(config);
             },
 
-            async error => {
+            async (error: any) => {
                 const pluginContext = this.createPluginContext(error.config);
                 await this.pluginManager.executeOnError(pluginContext, error);
 
+                const interceptors = this.globalConfig.interceptors;
                 if (!interceptors?.error) {
                     return this.defaultErrorInterceptor(error);
                 }
@@ -303,6 +307,7 @@ export class BaseRequest extends RequestMethods {
                 const pluginContext = this.createPluginContext(response.config);
                 await this.pluginManager.executeAfterRequest(pluginContext, response);
 
+                const interceptors = this.globalConfig.interceptors;
                 if (!interceptors?.response) {
                     return this.defaultResponseInterceptor(response);
                 }
@@ -316,11 +321,12 @@ export class BaseRequest extends RequestMethods {
                     return this.defaultResponseInterceptor(response);
                 }
             },
-            async error => {
+            async (error: any) => {
                 const config = error.config || {};
                 const pluginContext = this.createPluginContext(config);
                 await this.pluginManager.executeOnError(pluginContext, error);
 
+                const interceptors = this.globalConfig.interceptors;
                 if (!interceptors?.error) {
                     return this.defaultErrorInterceptor(error);
                 }
