@@ -42,7 +42,8 @@ export const DEFAULT_GLOBAL_CONFIG: GlobalConfig = {
     defaultTransformData: true,
     retryConfig: DEFAULT_RETRY_CONFIG,
     requestCancel: DEFAULT_CANCEL_CONFIG,
-    logLevel: 'error'
+    logLevel: 'error',
+    interceptors: {}
 };
 
 /**

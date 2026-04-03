@@ -193,7 +193,8 @@ export class BaseRequest extends RequestMethods {
         return (
             oldConfig.baseURL !== newConfig.baseURL ||
             oldConfig.timeout !== newConfig.timeout ||
-            JSON.stringify(oldConfig.headers) !== JSON.stringify(newConfig.headers)
+            JSON.stringify(oldConfig.headers) !== JSON.stringify(newConfig.headers) ||
+            JSON.stringify(oldConfig.interceptors) !== JSON.stringify(newConfig.interceptors)
         );
     }
 
