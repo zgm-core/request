@@ -1,9 +1,9 @@
 {
     "name": "@zgm-core/request",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "Enterprise-grade HTTP request library built on Axios with TypeScript support - 支持并发、串行、幂等、缓存及自动化代码生成",
     "type": "module",
-    "main": "dist/index.cjs.js",
+    "main": "dist/index.cjs",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",
     "sideEffects": false,
@@ -14,7 +14,7 @@
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.esm.js",
-            "require": "./dist/index.cjs.js"
+            "require": "./dist/index.cjs"
         }
     },
     "files": [

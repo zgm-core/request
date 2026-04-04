@@ -21,7 +21,7 @@ export default defineConfig({
             entry: resolve(__dirname, 'src/index.ts'),
             name: 'ZGMCoreRequest',
             formats: ['es', 'cjs'],
-            fileName: format => `index.${format === 'es' ? 'esm.js' : 'cjs.js'}`
+            fileName: format => `index.${format === 'es' ? 'esm.js' : 'cjs'}`
         },
 
         rollupOptions: {
