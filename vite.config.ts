@@ -48,7 +48,17 @@ export default defineConfig({
             }
         },
 
-        minify: false,
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: false,  // 保留 console，便于调试
+                drop_debugger: true,
+                pure_funcs: ['console.debug']  // 移除 console.debug
+            },
+            format: {
+                comments: false  // 移除注释
+            }
+        },
         sourcemap: false,
         target: 'ES2020',
         emptyOutDir: true,

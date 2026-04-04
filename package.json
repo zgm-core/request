@@ -1,6 +1,6 @@
 {
     "name": "@zgm-core/request",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Enterprise-grade HTTP request library built on Axios with TypeScript support - 支持并发、串行、幂等、缓存及自动化代码生成",
     "type": "module",
     "main": "dist/index.cjs.js",
@@ -84,6 +84,7 @@
         "@types/node": "^20.0.0",
         "@types/qs": "^6.9.18",
         "@vitest/coverage-v8": "^2.1.8",
+        "terser": "^5.46.1",
         "typescript": "^5.7.2",
         "vite": "^6.0.3",
         "vite-plugin-dts": "^4.3.0",
