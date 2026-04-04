@@ -84,7 +84,8 @@ describe('BatchRequestHandler - 批量请求', () => {
       await new Promise(resolve => setTimeout(resolve, delay));
       const elapsed = Date.now() - startTime;
 
-      expect(elapsed).toBeGreaterThanOrEqual(delay);
+      // CI 环境定时器精度问题，允许 5ms 误差
+      expect(elapsed).toBeGreaterThanOrEqual(delay - 5);
     });
 
     it('应该在批次间添加延迟', async () => {
